@@ -1,7 +1,7 @@
 import React from 'react';
-import { useTaskStore } from '@/store/tasks';
+import { useTaskStore } from '../store/tasks';
 import { format } from 'date-fns';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Checkbox } from '../components/ui/checkbox';
 
 export function InboxPage() {
   const tasks = useTaskStore((state) => state.tasks);
