@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTaskStore } from '@/store/tasks';
+import { useTaskStore } from '../store/tasks';
 import { format } from 'date-fns';
 
 export function TodayPage() {
