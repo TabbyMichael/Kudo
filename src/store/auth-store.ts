@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getAuth, User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile } from '@firebase/auth';
+import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, updateProfile } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
 interface AuthState {
@@ -69,14 +69,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   logout: async () => {
     try {
-      set({ loading: true, error: null });
       await signOut(auth);
       set({ user: null });
     } catch (error) {
       set({ error: (error as Error).message });
-      throw error;
-    } finally {
-      set({ loading: false });
     }
-  }
+  },
 }));
