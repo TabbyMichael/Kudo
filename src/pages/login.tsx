@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useAuthStore } from '../store/auth-store';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuthStore } from '../store/mock-auth-store';
+import { useNavigate } from 'react-router-dom';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
-  const { signIn, signUp, signInWithGoogle, error, user } = useAuthStore();
+  const { login, signup, googleSignIn, error, user, loading } = useAuthStore();
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     // If user is already logged in, redirect to home
@@ -20,18 +19,20 @@ export function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = isSignUp
-      ? await signUp(email, password, name)
-      : await signIn(email, password);
+    if (isSignUp) {
+      await signup(email, password, name);
+    } else {
+      await login(email, password);
+    }
     
-    if (success) {
+    if (user) {
       navigate('/inbox');
     }
   };
 
   const handleGoogleSignIn = async () => {
-    const success = await signInWithGoogle();
-    if (success) {
+    await googleSignIn();
+    if (user) {
       navigate('/inbox');
     }
   };
@@ -114,9 +115,16 @@ export function LoginPage() {
           <div>
             <button
               type="submit"
-              className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              disabled={loading}
+              className={`group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              {isSignUp ? 'Sign up' : 'Sign in'}
+              {loading ? (
+                'Loading...'
+              ) : isSignUp ? (
+                'Sign up'
+              ) : (
+                'Sign in'
+              )}
             </button>
           </div>
         </form>

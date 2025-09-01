@@ -7,10 +7,8 @@ import { TodayPage } from './pages/today';
 import { UpcomingPage } from './pages/upcoming';
 import { FiltersPage } from './pages/filters';
 import { LoginPage } from './pages/login';
-import { useAuthStore } from './store/auth-store';
+import { useAuthStore } from './store/mock-auth-store';
 import { useCollaborationStore } from './store/collaboration-store';
-import { auth } from './config/firebase';
-import type { User } from 'firebase/auth';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuthStore();
@@ -21,29 +19,22 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 const App: React.FC = () => {
-  const { setUser } = useAuthStore();
+  const { user } = useAuthStore();
   const { startPresenceTracking, stopPresenceTracking, initializeRealtimeUpdates } = useCollaborationStore();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user: User | null) => {
-      setUser(user);
+    if (user) {
+      // Start tracking presence when user is authenticated
+      startPresenceTracking();
+      // Initialize real-time updates for the current board/project
+      const cleanup = initializeRealtimeUpdates('default-board');
       
-      if (user) {
-        // Start tracking presence when user is authenticated
-        startPresenceTracking();
-        // Initialize real-time updates for the current board/project
-        const cleanup = initializeRealtimeUpdates('default-board');
-        return () => {
-          stopPresenceTracking();
-          cleanup();
-        };
-      }
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+      return () => {
+        stopPresenceTracking();
+        cleanup();
+      };
+    }
+  }, [user]);
 
   return (
     <BrowserRouter>
