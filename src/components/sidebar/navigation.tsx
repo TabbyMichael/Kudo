@@ -3,8 +3,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Inbox, Calendar, Hash } from 'lucide-react';
 import { NavItem } from './nav-item';
 import { useTaskStore } from '@/store/tasks';
+import cn from 'classnames';
 
-export function Navigation() {
+interface NavigationProps {
+  collapsed?: boolean;
+}
+
+export function Navigation({ collapsed = false }: NavigationProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const tasks = useTaskStore((state) => state.tasks);
@@ -16,32 +21,36 @@ export function Navigation() {
   }).length;
 
   return (
-    <nav className="mt-2 space-y-1">
+    <nav className={cn("mt-2 space-y-1", collapsed && 'flex flex-col items-center')}>
       <NavItem
         icon={Inbox}
-        label="Inbox"
-        count={inboxCount}
+        label={collapsed ? '' : "Inbox"}
+        count={collapsed ? undefined : inboxCount}
         active={location.pathname === '/inbox' || location.pathname === '/'}
         onClick={() => navigate('/inbox')}
+        collapsed={collapsed}
       />
       <NavItem
         icon={Calendar}
-        label="Today"
-        count={todayCount}
+        label={collapsed ? '' : "Today"}
+        count={collapsed ? undefined : todayCount}
         active={location.pathname === '/today'}
         onClick={() => navigate('/today')}
+        collapsed={collapsed}
       />
       <NavItem
         icon={Calendar}
-        label="Upcoming"
+        label={collapsed ? '' : "Upcoming"}
         active={location.pathname === '/upcoming'}
         onClick={() => navigate('/upcoming')}
+        collapsed={collapsed}
       />
       <NavItem
         icon={Hash}
-        label="Filters & Labels"
+        label={collapsed ? '' : "Filters & Labels"}
         active={location.pathname === '/filters'}
         onClick={() => navigate('/filters')}
+        collapsed={collapsed}
       />
     </nav>
   );
