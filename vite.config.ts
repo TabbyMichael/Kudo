@@ -5,13 +5,7 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    exclude: ['lucide-react'],
-    include: [
-      'firebase/app',
-      'firebase/auth',
-      'firebase/firestore',
-      'firebase/storage'
-    ]
+    exclude: ['lucide-react']
   },
   resolve: {
     alias: {
